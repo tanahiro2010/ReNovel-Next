@@ -1,7 +1,7 @@
-export default function linkButton({ url, children, className }) {
+export default function linkButton({ url, className, children }) {
     return (
         <a 
-            href={href} 
+            href={url} 
             className={className}
             
         >{children}</a>

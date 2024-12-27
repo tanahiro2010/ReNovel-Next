@@ -1,6 +1,19 @@
-import Link from "next/link";
+import { authSession } from "@/controllers/session/authSession";
+import { redirect }    from "next/dist/server/api-utils";
+import { cookies }     from "next/headers";
+import Link            from "next/link";
 
-export default function Header() {
+export default async function Header({ loginRedirect }) {
+    const cookieStore  = await cookies();
+    const sessionToken = cookieStore.get('token');
+    const userId       = await authSession(sessionToken);
+
+    if (loginRedirect) {
+        if (userId) {
+            redirect('/');
+        }
+    }
+
     return (
         <>
             <header className="bg-white shadow-md">
@@ -13,15 +26,19 @@ export default function Header() {
                     </div>
 
                     <div className={`flex space-x-4`}>
-                        <Link url="/search" className={`text-blue-600 hover:text-blue-500`}>
+                        <Link href="/search" className={`text-blue-600 hover:text-blue-500`}>
                             検索
                         </Link>
-                        <Link href="/login" className={`text-blue-600 hover:text-blue-500`}>
-                            ログイン
+
+                        <Link href={ userId ? "/dashboard" : "/login" } className={`text-blue-600 hover:text-blue-500`}>
+                            { userId ?? "ログイン" }
                         </Link>
                     </div>
                 </div>
             </header>
+
+            <br />
+            <br />
         </>
     );
 }
